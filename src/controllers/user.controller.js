@@ -23,6 +23,20 @@ const getUserById = catchAsync(async (req, res, next) => {
     return successResponse(res, 200, "Usuario encontrado correctamente", user);
 });
 
+// 2.1 Obtener usuario por documento
+const getUserByDocument = catchAsync(async (req, res, next) => {
+    const { document } = req.params;
+    const user = await UserModel.findByDocument(document);
+
+    if (!user) {
+        const error = new Error(`Usuario con documento ${document} no encontrado`);
+        error.statusCode = 404;
+        return next(error);
+    }
+
+    return successResponse(res, 200, "Usuario encontrado correctamente", user);
+});
+
 // 3. Crear usuario
 const createUser = catchAsync(async (req, res, next) => {
     const { name, document, email, password } = req.body;
@@ -85,6 +99,7 @@ export {
     createUser,
     getUsers,
     getUserById,
+    getUserByDocument,
     updateUser,
     deleteUser
 };

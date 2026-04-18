@@ -8,10 +8,15 @@ import {
   getProductsByCategory, // Controlador especial para la relación
 } from "../controllers/category.controller.js";
 
+// middleware de validacion de JWT
+import { validateToken } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { categorySchema } from "../schemas/category.schema.js";
 
 const categoryRouter = Router();
+
+// Aplicar validacion de JWT a todas las rutas de este router
+categoryRouter.use(validateToken);
 
 categoryRouter.get("/", getAllCategories);
 categoryRouter.get("/:id", getCategoryById);
