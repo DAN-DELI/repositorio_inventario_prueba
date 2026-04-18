@@ -44,5 +44,27 @@ export const UserModel = {
 
     const [createdUser] = await pool.query("SELECT * FROM users WHERE id = ?", [result.insertId]);
     return createdUser[0];
+  },
+
+  // 7. Actualizar refresh_token
+  updateRefreshToken: async (userId, refresh_token) => {
+    await pool.query("UPDATE users SET refresh_token = ? WHERE id = ?",
+      [refresh_token, userId]
+    );
+  },
+
+  // 8. Buscar usuario por refresh_token
+  findByRefreshToken: async (refresh_token) => {
+    const [rows] = await pool.query("SELECT * FROM users WHERE refresh_token = ?",
+      [refresh_token]
+    );
+    return rows[0] || null
+  },
+
+  // 9. Borra el refresh_token
+  revokeRefreshToken: async (userId) => {
+    await pool.query("UPDATE users SET refresh_token = NULL WHERE id = ?",
+      [userId]
+    );
   }
 };
