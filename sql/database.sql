@@ -25,13 +25,13 @@ CREATE TABLE categories (
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    categori_id INT NOT NULL,
+    category_id INT NOT NULL,
     created_ud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_up TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
     -- Definición de la Llave Foránea con restricción de eliminación
     CONSTRAINT fk_product_category 
-    FOREIGN KEY (categori_id) 
+    FOREIGN KEY (category_id) 
     REFERENCES categories(id)
     ON DELETE RESTRICT 
     ON UPDATE CASCADE
@@ -39,3 +39,14 @@ CREATE TABLE products (
 
 -- 8. Modificamos la tabla productos para poder almacenar los precios
 ALTER TABLE products ADD COLUMN price DECIMAL(10, 2) AFTER name;
+
+-- 9. Crear la tabla de usuarios
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    document VARCHAR(20) NOT NULL UNIQUE, 
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

@@ -29,7 +29,7 @@ INSERT INTO categories (id, name) VALUES
 -- ==========================================
 -- 2. POBLAR PRODUCTOS CON PRECIO (100 Registros)
 -- ==========================================
-INSERT INTO products (id, name, categori_id, price) VALUES
+INSERT INTO products (id, name, category_id, price) VALUES
 -- Categoría 1: Laptops y Computadoras
 (1, 'Laptop Dell XPS 15', 1, 1499.99),
 (2, 'MacBook Pro 16 M2', 1, 2499.00),
@@ -169,3 +169,16 @@ INSERT INTO products (id, name, categori_id, price) VALUES
 (98, 'Asistente Amazon Echo Dot 5ta Gen', 20, 49.99),
 (99, 'Enchufe Inteligente TP-Link Tapo', 20, 15.00),
 (100, 'Cámara de Seguridad Wyze Cam v3', 20, 35.98);
+
+-- ==========================================
+-- 3. POBLAR USUARIOS (Solo 1 de prueba)
+-- ==========================================
+INSERT INTO users (name, document, email, password, created_at, updated_at) 
+VALUES (
+    'Usuario de Prueba', 
+    '11111', 
+    'esUnaPrueva@juas.com', 
+    '$2b$10$YfKH9/EId.ScWbY9GAcnqO8OIBLKnsB0Be7GV.0iEaZeMhGZt0ZuW', -- La contraseña de este usuario es "contraseña"
+    '2026-04-18 06:48:07', 
+    '2026-04-18 06:48:07'
+);

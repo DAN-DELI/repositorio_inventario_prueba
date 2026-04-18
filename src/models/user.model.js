@@ -1,0 +1,48 @@
+import pool from "../config/db.js";
+
+export const UserModel = {
+  // 1. Obtener todos los usuarios
+  getAll: async () => {
+    const [users] = await pool.query("SELECT * FROM users");
+    return users;
+  },
+
+  // 2. Obtener un usuario por ID
+  findById: async (id) => {
+    const [user] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+    return user[0] || null;
+  },
+
+  // 3. Obtener usuario por documento
+  findByDocument: async (document) => {
+    const [user] = await pool.query("SELECT * FROM users WHERE document = ?", [document]);
+    return user[0] || null;
+  },
+
+  // 4. Actualizar usuario
+  update: async (id, data) => {
+    const [result] = await pool.query("UPDATE users SET ? WHERE id = ?", [data, id]);
+    if (result.affectedRows === 0) return null;
+
+    const [updatedUser] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+    return updatedUser[0];
+  },
+
+  // 5. Eliminar usuario
+  delete: async (id) => {
+    const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
+    return result.affectedRows > 0;
+  },
+
+  // 6. Crear un nuevo usuario
+  create: async (newUser) => {
+    const { name, document, email, password } = newUser;
+    const [result] = await pool.query(
+      "INSERT INTO users (name, document, email, password) VALUES (?, ?, ?, ?)",
+      [name, document, email, password],
+    );
+
+    const [createdUser] = await pool.query("SELECT * FROM users WHERE id = ?", [result.insertId]);
+    return createdUser[0];
+  }
+};

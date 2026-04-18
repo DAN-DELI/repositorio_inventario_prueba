@@ -15,9 +15,9 @@ export const ProductModel = {
 
   // El método que conecta ambos mundos
   findByCategoryId: async (categoryId) => {
-    // Usamos el nombre exacto de la columna que definiste en tu SQL: 'categori_id'
+    // Usamos el nombre exacto de la columna que definiste en tu SQL: 'category_id'
     const [rows] = await pool.query(
-      "SELECT * FROM products WHERE categori_id = ?",
+      "SELECT * FROM products WHERE category_id = ?",
       [categoryId],
     );
     return rows;
@@ -25,11 +25,11 @@ export const ProductModel = {
 
   create: async (newProduct) => {
     // Extraemos los campos que coinciden con nuestra tabla SQL actual
-    const { name, categori_id, price } = newProduct;
+    const { name, category_id, price } = newProduct;
 
     const [result] = await pool.query(
-      "INSERT INTO products (name, categori_id, price) VALUES (?, ?, ?)",
-      [name, categori_id, price],
+      "INSERT INTO products (name, category_id, price) VALUES (?, ?, ?)",
+      [name, category_id, price],
     );
 
     const [createdProduct] = await pool.query(
@@ -40,11 +40,11 @@ export const ProductModel = {
   },
 
   update: async (id, updatedFields) => {
-    const { name, categori_id } = updatedFields;
+    const { name, category_id } = updatedFields;
 
     const [result] = await pool.query(
-      "UPDATE products SET name = ?, categori_id = ? price = ? WHERE id = ?",
-      [name, categori_id, id],
+      "UPDATE products SET name = ?, category_id = ?, price = ? WHERE id = ?",
+      [name, category_id, id],
     );
 
     if (result.affectedRows === 0) return null;
