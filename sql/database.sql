@@ -39,3 +39,14 @@ CREATE TABLE products (
 
 -- 8. Modificamos la tabla productos para poder almacenar los precios
 ALTER TABLE products ADD COLUMN price DECIMAL(10, 2) AFTER name;
+
+-- 9. Crear la tabla de usuarios
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    document VARCHAR(20) NOT NULL UNIQUE, 
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

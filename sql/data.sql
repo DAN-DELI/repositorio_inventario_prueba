@@ -169,3 +169,16 @@ INSERT INTO products (id, name, categori_id, price) VALUES
 (98, 'Asistente Amazon Echo Dot 5ta Gen', 20, 49.99),
 (99, 'Enchufe Inteligente TP-Link Tapo', 20, 15.00),
 (100, 'Cámara de Seguridad Wyze Cam v3', 20, 35.98);
+
+-- ==========================================
+-- 3. POBLAR USUARIOS (Solo 1 de prueba)
+-- ==========================================
+INSERT INTO users (name, document, email, password, created_at, updated_at) 
+VALUES (
+    'Usuario de Prueba', 
+    '11111', 
+    'esUnaPrueva@juas.com', 
+    '$2b$10$YfKH9/EId.ScWbY9GAcnqO8OIBLKnsB0Be7GV.0iEaZeMhGZt0ZuW', -- La contraseña de este usuario es "contraseña"
+    '2026-04-18 06:48:07', 
+    '2026-04-18 06:48:07'
+);
