@@ -29,7 +29,7 @@ INSERT INTO categories (id, name) VALUES
 -- ==========================================
 -- 2. POBLAR PRODUCTOS CON PRECIO (100 Registros)
 -- ==========================================
-INSERT INTO products (id, name, categori_id, price) VALUES
+INSERT INTO products (id, name, category_id, price) VALUES
 -- Categoría 1: Laptops y Computadoras
 (1, 'Laptop Dell XPS 15', 1, 1499.99),
 (2, 'MacBook Pro 16 M2', 1, 2499.00),

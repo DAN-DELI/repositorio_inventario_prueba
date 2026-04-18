@@ -26,8 +26,8 @@ const getProductById = catchAsync(async (req, res, next) => {
 });
 
 const createProduct = catchAsync(async (req, res, next) => {
-  const { name, categori_id, price } = req.body;
-  const newProduct = await ProductModel.create({ name, categori_id, price });
+  const { name, category_id, price } = req.body;
+  const newProduct = await ProductModel.create({ name, category_id, price });
   return successResponse(res, 201, "Producto creado correctamente", newProduct);
 });
 
