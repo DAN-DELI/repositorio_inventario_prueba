@@ -1,33 +1,42 @@
--- 1. Crear la base de datos
+-- ==========================================
+-- 1. CREACION DE USUARIO Y ASIGNACION DE DB
+-- ==========================================
+
+-- 1.1. Crear la base de datos
 CREATE DATABASE IF NOT EXISTS inventario_adso;
 
--- 2. Crear el usuario restringido a localhost
+-- 1.2. Crear el usuario restringido a localhost
 CREATE USER 'app_user'@'localhost' IDENTIFIED BY '#ADSO_node';
 
--- 3. Asignar todos los privilegios de ESA base de datos a ESTE usuario
+-- 1.3. Asignar todos los privilegios de ESA base de datos a ESTE usuario
 GRANT ALL PRIVILEGES ON inventario_adso.* TO 'app_user'@'localhost';
 
--- 4. Aplicar los cambios de privilegios inmediatamente
+-- 1.4. Aplicar los cambios de privilegios inmediatamente
 FLUSH PRIVILEGES;
 
--- 5. Seleccionar la base de datos para empezar a crear las tablas
+-- ==========================================
+--        2. CREACION DE TABLAS 
+-- ==========================================
+
+-- 2.1. Seleccionar la base de datos para empezar a crear las tablas
 USE inventario_adso;
 
--- 6. Crear la tabla de Categorías (Debe ir primero porque no depende de nadie)
+-- 2.2. Crear la tabla de Categorías (Debe ir primero porque no depende de nadie)
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    created_ud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_up TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- 7. Crear la tabla de Productos
+-- 2.3. Crear la tabla de Productos
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2),
     category_id INT NOT NULL,
-    created_ud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_up TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
     -- Definición de la Llave Foránea con restricción de eliminación
     CONSTRAINT fk_product_category 
@@ -37,10 +46,7 @@ CREATE TABLE products (
     ON UPDATE CASCADE
 );
 
--- 8. Modificamos la tabla productos para poder almacenar los precios
-ALTER TABLE products ADD COLUMN price DECIMAL(10, 2) AFTER name;
-
--- 9. Crear la tabla de usuarios
+-- 2.4. Crear la tabla de usuarios
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -50,4 +56,40 @@ CREATE TABLE users (
     refresh_token VARCHAR(250),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 2.5. Crear tabla de Roles
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
+-- 2.6. Crear tabla de Permisos
+CREATE TABLE permissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action_name VARCHAR(100) NOT NULL UNIQUE, -- Ej: 'products.create', 'users.delete'
+    description VARCHAR(255)
+);
+
+/*
+    <=== CREACION DE TABLAS PIVOTE ===>
+*/
+
+-- 2.7. Tabla intermedia: Usuarios <-> Roles
+CREATE TABLE user_roles (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_ur_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_ur_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
+);
+
+-- 2.8. Tabla intermedia: Roles <-> Permisos
+CREATE TABLE role_permissions (
+    role_id INT NOT NULL,
+    permission_id INT NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    CONSTRAINT fk_rp_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_rp_permission FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE RESTRICT
 );
