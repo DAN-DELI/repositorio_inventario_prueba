@@ -28,7 +28,7 @@ export const loginJWT = catchAsync(async (req, res, next) => {
     }
 
     // 2. Validar password
-    const isValid = await bcrypt.compare(password, user.password);
+    const isValid = await bcrypt.compare(password, user.password_hash);
 
     // Si no es valida, creamos un error personalizado y lo enviamos al middleware
     if (!isValid) {
