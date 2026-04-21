@@ -39,13 +39,13 @@ const getUserByDocument = catchAsync(async (req, res, next) => {
 
 // 3. Crear usuario
 const createUser = catchAsync(async (req, res, next) => {
-    const { name, document, email, password_hash } = req.body;
+    const { name, document, email, password } = req.body;
 
     // 1. Generar la "sal" (Nivel de seguridad 10)
     const salt = await bcrypt.genSalt(10);
 
     // 2. Crear el hash (encriptar la clave recibida) 
-    const hashedPassword = await bcrypt.hash(password_hash, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // 3. Enviar al modelo la contraseña YA ENCRIPTADA
     const scriptUser = await UserModel.create({
@@ -95,11 +95,28 @@ const deleteUser = catchAsync(async (req, res, next) => {
     return successResponse(res, 200, "Usuario eliminado correctamente");
 });
 
+const getMyPermissions = catchAsync(async (req, res, next) => {
+
+    // Consulta los permisos usando el id del JWT
+    const [rows] = await UserModel.getPermissiosUser(req.user.userId);
+
+    if (!rows || rows.length === 0) {
+        const error = new Error(`El usuario no cuenta con permisos registrados`);
+        error.statusCode = 404;
+        return next(error)
+    }
+
+    // Crear array de permisos
+    const userPermissions = rows.map(p => p.action_name);
+    successResponse(res, 200, "Permisos encontrados exitosamente", userPermissions)
+})
+
 export {
     createUser,
     getUsers,
     getUserById,
     getUserByDocument,
     updateUser,
-    deleteUser
+    deleteUser,
+    getMyPermissions
 };
