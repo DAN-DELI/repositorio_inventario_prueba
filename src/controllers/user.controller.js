@@ -39,20 +39,20 @@ const getUserByDocument = catchAsync(async (req, res, next) => {
 
 // 3. Crear usuario
 const createUser = catchAsync(async (req, res, next) => {
-    const { name, document, email, password } = req.body;
+    const { name, document, email, password_hash } = req.body;
 
     // 1. Generar la "sal" (Nivel de seguridad 10)
     const salt = await bcrypt.genSalt(10);
 
     // 2. Crear el hash (encriptar la clave recibida) 
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password_hash, salt);
 
     // 3. Enviar al modelo la contraseña YA ENCRIPTADA
     const scriptUser = await UserModel.create({
         name,
         document,
         email,
-        password: hashedPassword // Mandamos el hash, no la clave real
+        password_hash: hashedPassword // Mandamos el hash, no la clave real
     });
 
     return successResponse(res, 201, "Usuario creado correctamente", scriptUser);

@@ -36,10 +36,10 @@ export const UserModel = {
 
   // 6. Crear un nuevo usuario
   create: async (newUser) => {
-    const { name, document, email, password } = newUser;
+    const { name, document, email, password_hash } = newUser;
     const [result] = await pool.query(
-      "INSERT INTO users (name, document, email, password) VALUES (?, ?, ?, ?)",
-      [name, document, email, password],
+      "INSERT INTO users (name, document, email, password_hash) VALUES (?, ?, ?, ?)",
+      [name, document, email, password_hash],
     );
 
     const [createdUser] = await pool.query("SELECT * FROM users WHERE id = ?", [result.insertId]);
