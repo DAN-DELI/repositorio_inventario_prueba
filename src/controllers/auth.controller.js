@@ -61,10 +61,15 @@ export const loginJWT = catchAsync(async (req, res, next) => {
     // 4. Guardar refresh en BD
     await UserModel.updateRefreshToken(user.id, refreshToken);
 
-    // 5. Empaquetar informacion
+    // 5. Consultamos permisos (El folleto guia para el frontend)
+    const [rows] = await UserModel.getPermissiosUser(user.id);
+    const userPermissions = rows.map(p => p.action_name);
+
+    // 6. Empaquetar informacion
     const responseData = {
         accessToken,
         refreshToken,
+        roles: userPermissions,
         user: {
             id: user.id,
             name: user.name,
@@ -73,7 +78,7 @@ export const loginJWT = catchAsync(async (req, res, next) => {
         }
     };
 
-    // 6. Responder
+    // 7. Responder
     successResponse(res, 200, "JWT creado con exito", responseData);
 });
 
@@ -140,10 +145,15 @@ export const refreshJWT = catchAsync(async (req, res, next) => {
     // 6. Actualizar refresh token en BD (invalida el anterior)
     await UserModel.updateRefreshToken(user.id, newRefreshToken);
 
-    // 7. Empaquetar informacion
+    // 7. Consultar permisos (El folleto guia para el frontend)
+    const [rows] = await UserModel.getPermissiosUser(user.id);
+    const userPermissions = rows.map(p => p.action_name);
+
+    // 8. Empaquetar informacion
     const responseData = {
         accessToken,
         refreshToken: newRefreshToken,
+        roles: userPermissions,
         user: {
             id: user.id,
             name: user.name,
@@ -152,6 +162,7 @@ export const refreshJWT = catchAsync(async (req, res, next) => {
         }
     };
 
+    // 9. Retornar respuesta
     successResponse(res, 200, "Token renovado exitosamente", responseData);
 });
 
