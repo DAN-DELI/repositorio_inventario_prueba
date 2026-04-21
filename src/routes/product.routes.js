@@ -1,3 +1,6 @@
+//  ==========================================
+//              IMPORTACIONES
+//  ==========================================
 import { Router } from "express";
 import {
   getAllProducts,
@@ -6,26 +9,39 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/product.controller.js";
-// middleware de validacion de token
-import { validateToken } from "../middlewares/auth.middleware.js";
 
-// middleware de validacion de datos con zod
+// <=== Importacion de middlewares ===>
+import { validateToken } from "../middlewares/auth.middleware.js"; // Validacion de token
+
+// Validacion de datos con zod
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { productSchema } from "../schemas/product.schema.js";
 
+import { checkPermission } from "../middlewares/checkPermission.middleware.js"; // Validacion de permisos
+
 const productRouter = Router();
 
-// Aplicar validacion de JWT a todas las rutas de este router
-productRouter.use(validateToken);
+//  ==========================================
+//    MIDDLEWARE TOTAL DE VALIDACION DE JWT
+//  ==========================================
+productRouter.use(validateToken); // Aplicar validacion de JWT a todas las rutas de este router
 
-productRouter.get("/", getAllProducts);
 
-productRouter.get("/:id", getProductById);
+//  ==========================================
+//              RUTAS DISPONIBLES
+//  ==========================================
+productRouter.get("/", checkPermission("product.get"), getAllProducts); // Obtener todos los productos
 
-productRouter.post("/", validateSchema(productSchema), createProduct);
+productRouter.get("/:id", checkPermission("product.get"), getProductById); // Obtener producto por id
 
-productRouter.put("/:id", validateSchema(productSchema), updateProduct);
+productRouter.post("/", checkPermission("product.post"), validateSchema(productSchema), createProduct); // Crear producto
 
-productRouter.delete("/:id", deleteProduct);
+productRouter.put("/:id", checkPermission("product.put"), validateSchema(productSchema), updateProduct); // Actualizar producto
 
+productRouter.delete("/:id", checkPermission("product.delete"), deleteProduct); // Borrar producto
+
+
+//  ==========================================
+//       EXPORTACION DEL productRouter
+//  ==========================================
 export default productRouter;
