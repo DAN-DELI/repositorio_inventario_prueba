@@ -1,6 +1,7 @@
 -- Usar la base de datos correcta
 USE inventario_adso;
 
+
 -- ==========================================
 -- 1. POBLAR CATEGORÍAS (20 Registros)
 -- ==========================================
@@ -25,6 +26,7 @@ INSERT INTO categories (id, name) VALUES
 (18, 'Herramientas de Mantenimiento PC'),
 (19, 'Mobiliario de Oficina y Gaming'),
 (20, 'Iluminación Inteligente y Domótica');
+
 
 -- ==========================================
 -- 2. POBLAR PRODUCTOS CON PRECIO (100 Registros)
@@ -170,15 +172,82 @@ INSERT INTO products (id, name, category_id, price) VALUES
 (99, 'Enchufe Inteligente TP-Link Tapo', 20, 15.00),
 (100, 'Cámara de Seguridad Wyze Cam v3', 20, 35.98);
 
+
 -- ==========================================
--- 3. POBLAR USUARIOS (Solo 1 de prueba)
+-- 3. POBLAR USUARIOS (Un usuario por cada rol)
 -- ==========================================
-INSERT INTO users (name, document, email, password, created_at, updated_at) 
-VALUES (
-    'Usuario de Prueba', 
-    '11111', 
-    'esUnaPrueva@juas.com', 
-    '$2b$10$YfKH9/EId.ScWbY9GAcnqO8OIBLKnsB0Be7GV.0iEaZeMhGZt0ZuW', -- La contraseña de este usuario es "contraseña"
-    '2026-04-18 06:48:07', 
-    '2026-04-18 06:48:07'
+INSERT INTO users (name, document, email, password_hash) VALUES 
+(
+  'Usuario con rol user', 
+  '10000', 
+  'rol_user@user.com', 
+  '$2b$10$0qGNFh57SkfjwSqXqJyBNOFd..K3A3Pyz4U4uu9dxB6IrWcru7t52' -- Su contraseña es ontraseña: usuario
+),
+(
+  'Usuario con rol admin', 
+  '20000', 
+  'rol_admin@admin.com', 
+  '$2b$10$WfvS1ezsrgtfAIa2mOyWquOq1Q.MouisXVN7rFg6E.ZhnE960qwJy' -- Su contraseña es ontraseña: administrador
 );
+
+
+-- ==========================================
+-- 4. POBLAR ROLES ( ADMIN | USER )
+-- ==========================================
+-- Poblar con rol user y admin
+INSERT INTO roles (name, description) VALUES 
+('user', 'Usuario base de la aplicación. Puede visualizar información general.'),
+('admin', 'Administrador del sistema. Tiene acceso total a todas las funcionalidades.');
+
+
+-- ==========================================
+-- 5. POBLAR PERMISOS ( 3 RUTAS DIFERENTES )
+-- ==========================================
+INSERT INTO permissions (action_name, description) VALUES 
+-- Permisos de Categorías
+('category.get', 'Obtener/visualizar categorías'),
+('category.post', 'Crear nuevas categorías'),
+('category.put', 'Actualizar categorías existentes'),
+('category.delete', 'Eliminar categorías'),
+
+-- Permisos de Productos
+('product.get', 'Obtener/visualizar productos'),
+('product.post', 'Crear nuevos productos'),
+('product.put', 'Actualizar productos existentes'),
+('product.delete', 'Eliminar productos'),
+
+-- Permisos de Usuarios
+('user.get', 'Obtener/visualizar usuarios'),
+('user.post', 'Crear nuevos usuarios'),
+('user.put', 'Actualizar usuarios existentes'),
+('user.delete', 'Eliminar usuarios');
+
+
+-- ==========================================
+-- 6. POBLAR TABLA PIVOTE:  ROL => PERMISOS
+-- ==========================================
+-- Usuario 1 ('Usuario con rol user') → Rol 1 ('user')
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
+
+-- Usuario 2 ('Usuario con rol admin') → Rol 2 ('admin')
+INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
+
+-- Permisos del rol user
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+(1, 1),  -- category.get
+(1, 5);  -- product.get
+
+-- Permisos del rol admin
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+(2, 1),  -- category.get
+(2, 2),  -- category.post
+(2, 3),  -- category.put
+(2, 4),  -- category.delete
+(2, 5),  -- product.get
+(2, 6),  -- product.post
+(2, 7),  -- product.put
+(2, 8),  -- product.delete
+(2, 9),  -- user.get
+(2, 10), -- user.post
+(2, 11), -- user.put
+(2, 12); -- user.delete

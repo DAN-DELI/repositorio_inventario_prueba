@@ -52,7 +52,7 @@ const createUser = catchAsync(async (req, res, next) => {
         name,
         document,
         email,
-        password: hashedPassword // Mandamos el hash, no la clave real
+        password_hash: hashedPassword // Mandamos el hash, no la clave real
     });
 
     return successResponse(res, 201, "Usuario creado correctamente", scriptUser);
@@ -95,11 +95,28 @@ const deleteUser = catchAsync(async (req, res, next) => {
     return successResponse(res, 200, "Usuario eliminado correctamente");
 });
 
+const getMyPermissions = catchAsync(async (req, res, next) => {
+
+    // Consulta los permisos usando el id del JWT
+    const [rows] = await UserModel.getPermissiosUser(req.user.userId);
+
+    if (!rows || rows.length === 0) {
+        const error = new Error(`El usuario no cuenta con permisos registrados`);
+        error.statusCode = 404;
+        return next(error)
+    }
+
+    // Crear array de permisos
+    const userPermissions = rows.map(p => p.action_name);
+    successResponse(res, 200, "Permisos encontrados exitosamente", userPermissions)
+})
+
 export {
     createUser,
     getUsers,
     getUserById,
     getUserByDocument,
     updateUser,
-    deleteUser
+    deleteUser,
+    getMyPermissions
 };

@@ -36,10 +36,10 @@ export const UserModel = {
 
   // 6. Crear un nuevo usuario
   create: async (newUser) => {
-    const { name, document, email, password } = newUser;
+    const { name, document, email, password_hash } = newUser;
     const [result] = await pool.query(
-      "INSERT INTO users (name, document, email, password) VALUES (?, ?, ?, ?)",
-      [name, document, email, password],
+      "INSERT INTO users (name, document, email, password_hash) VALUES (?, ?, ?, ?)",
+      [name, document, email, password_hash],
     );
 
     const [createdUser] = await pool.query("SELECT * FROM users WHERE id = ?", [result.insertId]);
@@ -66,5 +66,15 @@ export const UserModel = {
     await pool.query("UPDATE users SET refresh_token = NULL WHERE id = ?",
       [userId]
     );
+  },
+
+  // 10. Consultar permisos del usuario
+  getPermissiosUser: async (id) => {
+    return await pool.query(`SELECT DISTINCT p.action_name
+      FROM permissions p
+      INNER JOIN role_permissions rp ON p.id = rp.permission_id
+      INNER JOIN user_roles ur ON rp.role_id = ur.role_id
+      WHERE ur.user_id = ?;`,
+      [id]);
   }
 };

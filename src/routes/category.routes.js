@@ -1,3 +1,6 @@
+//  ==========================================
+//              IMPORTACIONES
+//  ==========================================
 import { Router } from "express";
 import {
   getAllCategories,
@@ -8,24 +11,41 @@ import {
   getProductsByCategory, // Controlador especial para la relación
 } from "../controllers/category.controller.js";
 
-// middleware de validacion de JWT
-import { validateToken } from "../middlewares/auth.middleware.js";
+// <=== Importacion de middlewares ===>
+import { validateToken } from "../middlewares/auth.middleware.js"; // Validacion de JWT
+
+// Validacion de datos con zod
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { categorySchema } from "../schemas/category.schema.js";
 
+import { checkPermission } from "../middlewares/checkPermission.middleware.js"; // Validacion de permisos
+
 const categoryRouter = Router();
 
-// Aplicar validacion de JWT a todas las rutas de este router
-categoryRouter.use(validateToken);
 
-categoryRouter.get("/", getAllCategories);
-categoryRouter.get("/:id", getCategoryById);
-categoryRouter.post("/", validateSchema(categorySchema), createCategory);
-categoryRouter.put("/:id", validateSchema(categorySchema), updateCategory);
-categoryRouter.delete("/:id", deleteCategory);
+//  ==========================================
+//    MIDDLEWARE TOTAL DE VALIDACION DE JWT
+//  ==========================================
+categoryRouter.use(validateToken); // Aplicar validacion de JWT a todas las rutas de este router
 
-// Ruta Relacional: Obtener productos por categoría
-// Sigue el estándar REST: /recurso-padre/:id/recurso-hijo
-categoryRouter.get("/:id/products", getProductsByCategory);
 
+//  ==========================================
+//              RUTAS DISPONIBLES
+//  ==========================================
+categoryRouter.get("/", checkPermission("category.get"), getAllCategories); // Obtiene todas las categorias
+
+categoryRouter.get("/:id", checkPermission("category.get"), getCategoryById); // Obtiene la categoria por su id
+
+categoryRouter.get("/:id/products", checkPermission("category.get"), getProductsByCategory); // Obtiene productos por categoría
+
+categoryRouter.post("/", checkPermission("category.post"), validateSchema(categorySchema), createCategory); // Crea una categoria
+
+categoryRouter.put("/:id", checkPermission("category.put"), validateSchema(categorySchema), updateCategory); // Actualiza una categoria
+
+categoryRouter.delete("/:id", checkPermission("category.delete"), deleteCategory); // Elimina una categoria
+
+
+//  ==========================================
+//       EXPORTACION DEL categoryRouter
+//  ==========================================
 export default categoryRouter;
