@@ -51,3 +51,43 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
+
+-- ESQUEMA DE PRUEBA PARA LA RELACION DE USER CON SUS PERMISOS: 
+
+-- === TABLA USERS & PERMISSIONS ===
+-- 10. Crear tabla de Roles (Admin, Empleado, etc.)
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE, -- Ej: 'admin', 'vendedor'
+    description VARCHAR(255)
+);
+
+-- 11. Crear tabla de Permisos (La unidad mínima de acción)
+CREATE TABLE permissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    action_name VARCHAR(100) NOT NULL UNIQUE, -- Ej: 'products.create', 'users.delete'
+    description VARCHAR(255)
+);
+
+
+-- === TABLAS => RELACION ROL Y PERMISOS ===
+
+-- 12. Tabla intermedia: Usuarios <-> Roles
+CREATE TABLE user_roles (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_ur_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ur_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+-- 13. Tabla intermedia: Roles <-> Permisos
+CREATE TABLE role_permissions (
+    role_id INT NOT NULL,
+    permission_id INT NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    CONSTRAINT fk_rp_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rp_permission FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+);
